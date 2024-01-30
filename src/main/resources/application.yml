@@ -1,0 +1,34 @@
+server:
+  netty:
+    connection-timeout: 2s
+    idle-timeout: 15s
+  port: 9003
+  shutdown: graceful
+
+spring:
+  application:
+    name: simulation-invoke-svc
+  cloud:
+    config:
+      uri: http://localhost:8888
+      request-connect-timeout: 5000 # 5s
+      request-read-timeout: 5000 # 5s
+      fail-fast: false # In production, set to true
+      retry:
+        max-attempts: 6
+        initial-interval: 1000 # 1s
+        max-interval: 2000 # 2s
+        multiplier: 1.1
+    stream:
+      bindings:
+        invokeSimulation-in-0:
+          destination: invoke-simulation
+          group: ${spring.application.name}
+  lifecycle:
+    timeout-per-shutdown-phase: 15s
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: user
+    password: password
+    connection-timeout: 5s
