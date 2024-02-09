@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simulation-invoke-svc
+  labels:
+    app: simulation-invoke-svc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simulation-invoke-svc
+  template:
+    metadata:
+      labels:
+        app: simulation-invoke-svc
+    spec:
+      containers:
+        - name: simulation-invoke-svc
+          image: ghcr.io/flawmop/simulation-invoke-svc
+          imagePullPolicy: IfNotPresent
+          lifecycle:
+            preStop:
+              exec:
+                command: [ "sh", "-c", "sleep 5" ]
+          ports:
+            - containerPort: 9002
+          volumeMounts:
+            - name: simulation-invoke-config-volume
+              mountPath: /workspace/config
+      volumes:
+        - name: simulation-invoke-config-volume
+          configMap:
+            name: simulation-invoke-config
