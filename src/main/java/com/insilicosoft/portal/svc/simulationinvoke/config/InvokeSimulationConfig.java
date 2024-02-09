@@ -1,4 +1,4 @@
-package com.insilicosoft.portal.svc.simulationinvoke.service;
+package com.insilicosoft.portal.svc.simulationinvoke.config;
 
 import java.util.function.Consumer;
 
@@ -12,9 +12,9 @@ import com.insilicosoft.portal.svc.simulationinvoke.event.SimulationMessage;
 import reactor.core.publisher.Flux;
 
 @Configuration
-public class InvokeSimulation {
+public class InvokeSimulationConfig {
 
-  private static final Logger log = LoggerFactory.getLogger(InvokeSimulation.class);
+  private static final Logger log = LoggerFactory.getLogger(InvokeSimulationConfig.class);
 
   @Bean
   Consumer<Flux<SimulationMessage>> invokeSimulation() {
