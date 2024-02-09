@@ -12,12 +12,12 @@ import com.insilicosoft.portal.svc.simulationinvoke.event.SimulationMessage;
 import reactor.core.publisher.Flux;
 
 @Configuration
-public class InvokeSimulationConfig {
+public class SimulationInvokeConfig {
 
-  private static final Logger log = LoggerFactory.getLogger(InvokeSimulationConfig.class);
+  private static final Logger log = LoggerFactory.getLogger(SimulationInvokeConfig.class);
 
   @Bean
-  Consumer<Flux<SimulationMessage>> invokeSimulation() {
+  Consumer<Flux<SimulationMessage>> simulationInvoke() {
     return flux -> flux.map(simulationMessage -> simulationMessage.modelId())
                        .doOnNext(modelId -> log.info("The simulation with model id {} is invoked", modelId))
                        .subscribe();
