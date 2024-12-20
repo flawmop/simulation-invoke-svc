@@ -18,8 +18,7 @@ public class SimulationInvokeConfig {
 
   @Bean
   Consumer<Flux<SimulationMessage>> simulationInvoke() {
-    return flux -> flux.map(simulationMessage -> simulationMessage.modelId())
-                       .doOnNext(modelId -> log.info("The simulation with model id {} is invoked", modelId))
+    return flux -> flux.doOnNext(simulationMessage -> log.info("The simulation {} is invoked", simulationMessage))
                        .subscribe();
   }
 
