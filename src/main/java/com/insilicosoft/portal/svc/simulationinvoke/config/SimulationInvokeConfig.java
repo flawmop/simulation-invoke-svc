@@ -2,23 +2,28 @@ package com.insilicosoft.portal.svc.simulationinvoke.config;
 
 import java.util.function.Consumer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestClient;
 
 import com.insilicosoft.portal.svc.simulationinvoke.event.SimulationMessage;
+import com.insilicosoft.portal.svc.simulationinvoke.service.InvocationService;
 
 import reactor.core.publisher.Flux;
 
 @Configuration
 public class SimulationInvokeConfig {
 
-  private static final Logger log = LoggerFactory.getLogger(SimulationInvokeConfig.class);
+  @Bean
+  RestClient restClient(final @Value("${URL_APP_MANAGER:http://app-manager:8080/}")
+                            String appManagerUrl) {
+    return RestClient.builder().baseUrl(appManagerUrl).build();
+  }
 
   @Bean
-  Consumer<Flux<SimulationMessage>> simulationInvoke() {
-    return flux -> flux.doOnNext(simulationMessage -> log.info("The simulation {} is invoked", simulationMessage))
+  Consumer<Flux<SimulationMessage>> simulationInvoke(final InvocationService invocationService) {
+    return flux -> flux.doOnNext(simulationMessage -> invocationService.invoke(simulationMessage))
                        .subscribe();
   }
 
