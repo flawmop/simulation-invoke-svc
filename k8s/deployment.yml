@@ -27,6 +27,23 @@ spec:
           volumeMounts:
             - name: simulation-invoke-config-volume
               mountPath: /workspace/config
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Dlogging.level.root=DEBUG"
+            - name: SPRING_RABBITMQ_HOST
+              value: portal-rabbitmq
+            - name: SPRING_RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-secret
+                  key: rabbitmqpassword
+            - name: SPRING_RABBITMQ_USER
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-secret
+                  key: rabbitmquser
+            - name: URL_APP_MANAGER
+              value: http://app-manager:8080/
       volumes:
         - name: simulation-invoke-config-volume
           configMap:
