@@ -3,12 +3,14 @@ package com.insilicosoft.portal.svc.simulationinvoke.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.insilicosoft.portal.svc.simulationinvoke.event.SimulationMessage;
+import com.insilicosoft.portal.svc.simulationinvoke.value.AppManagerResponse;
 
 @Service
 public class RestInvocationServiceImpl implements InvocationService {
@@ -24,14 +26,23 @@ public class RestInvocationServiceImpl implements InvocationService {
 
   @Override
   public void invoke(SimulationMessage simulationMessage) {
-    logger.debug("~invoke() : Called for {}", simulationMessage);
+    logger.debug("~invoke() : Called for '{}'", simulationMessage);
     String body = "";
     try {
       body = objectMapper.writeValueAsString(simulationMessage);
     } catch (JsonProcessingException e) {
       body = "{ 'error': '" + e.getMessage() + "' }";
     }
-    restClient.post().contentType(MediaType.APPLICATION_JSON).body(body).retrieve().toBodilessEntity();
+    final ResponseEntity<AppManagerResponse> responseEntity = restClient.post()
+                                                                        .contentType(MediaType.APPLICATION_JSON)
+                                                                        .body(body)
+                                                                        .retrieve()
+                                                                        .toEntity(AppManagerResponse.class);
+    final AppManagerResponse response = responseEntity.getBody();
+    // This is a UUID assigned to the simulation by app-manager
+    final String responseId = response.success().id();
+
+    logger.debug("~invoke() : app-manager assigned UUID is '{}'", responseId);
   }
 
 }
