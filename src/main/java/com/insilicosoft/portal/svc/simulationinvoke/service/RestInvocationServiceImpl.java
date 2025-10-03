@@ -9,7 +9,7 @@ import org.springframework.web.client.RestClient;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.insilicosoft.portal.svc.simulationinvoke.event.SimulationMessage;
+import com.insilicosoft.portal.svc.simulationinvoke.event.SimulationCreate;
 import com.insilicosoft.portal.svc.simulationinvoke.value.AppManagerResponse;
 
 @Service
@@ -25,11 +25,11 @@ public class RestInvocationServiceImpl implements InvocationService {
   }
 
   @Override
-  public void invoke(SimulationMessage simulationMessage) {
-    logger.debug("~invoke() : Called for '{}'", simulationMessage);
+  public void invoke(SimulationCreate simulationCreate) {
+    logger.debug("~invoke() : Called for '{}'", simulationCreate);
     String body = "";
     try {
-      body = objectMapper.writeValueAsString(simulationMessage);
+      body = objectMapper.writeValueAsString(simulationCreate);
     } catch (JsonProcessingException e) {
       body = "{ 'error': '" + e.getMessage() + "' }";
     }

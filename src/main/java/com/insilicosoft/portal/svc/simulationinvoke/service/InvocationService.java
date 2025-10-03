@@ -1,14 +1,14 @@
 package com.insilicosoft.portal.svc.simulationinvoke.service;
 
-import com.insilicosoft.portal.svc.simulationinvoke.event.SimulationMessage;
+import com.insilicosoft.portal.svc.simulationinvoke.event.SimulationCreate;
 
 public interface InvocationService {
 
   /**
    * Invoke a simulation.
    * 
-   * @param simulationMessage Simulation to invoke.
+   * @param simulationCreate Simulation to invoke (based on create event record).
    */
-  void invoke(SimulationMessage simulationMessage);
+  void invoke(SimulationCreate simulationCreate);
 
 }

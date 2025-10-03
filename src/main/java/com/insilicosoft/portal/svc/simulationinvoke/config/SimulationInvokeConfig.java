@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
 
-import com.insilicosoft.portal.svc.simulationinvoke.event.SimulationMessage;
+import com.insilicosoft.portal.svc.simulationinvoke.event.SimulationCreate;
 import com.insilicosoft.portal.svc.simulationinvoke.service.InvocationService;
 
 import reactor.core.publisher.Flux;
@@ -17,13 +17,13 @@ public class SimulationInvokeConfig {
 
   @Bean
   RestClient restClient(final @Value("${URL_APP_MANAGER:http://app-manager:8080/}")
-                            String appManagerUrl) {
+                              String appManagerUrl) {
     return RestClient.builder().baseUrl(appManagerUrl).build();
   }
 
   @Bean
-  Consumer<Flux<SimulationMessage>> simulationInvoke(final InvocationService invocationService) {
-    return flux -> flux.doOnNext(simulationMessage -> invocationService.invoke(simulationMessage))
+  Consumer<Flux<SimulationCreate>> simulationInvoke(final InvocationService invocationService) {
+    return flux -> flux.doOnNext(simulationCreate -> invocationService.invoke(simulationCreate))
                        .subscribe();
   }
 
