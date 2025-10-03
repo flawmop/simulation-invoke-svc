@@ -21,8 +21,8 @@ spring:
         multiplier: 1.1
     stream:
       bindings:
-        simulationInvoke-in-0:
-          destination: simulation-invoke
+        simulationCreate-in-0:
+          destination: simulation-create
           group: ${spring.application.name}
   lifecycle:
     timeout-per-shutdown-phase: 15s

@@ -22,7 +22,7 @@ public class SimulationInvokeConfig {
   }
 
   @Bean
-  Consumer<Flux<SimulationCreate>> simulationInvoke(final InvocationService invocationService) {
+  Consumer<Flux<SimulationCreate>> simulationCreate(final InvocationService invocationService) {
     return flux -> flux.doOnNext(simulationCreate -> invocationService.invoke(simulationCreate))
                        .subscribe();
   }
