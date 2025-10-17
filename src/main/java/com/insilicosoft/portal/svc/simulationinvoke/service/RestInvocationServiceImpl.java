@@ -18,31 +18,52 @@ public class RestInvocationServiceImpl implements InvocationService {
   private static final Logger logger = LoggerFactory.getLogger(RestInvocationServiceImpl.class);
   private static final ObjectMapper objectMapper = new ObjectMapper();
 
-  private final RestClient restClient;
+  private final RestClient restClientAppMgr;
+  private final RestClient restClientResults;
 
-  public RestInvocationServiceImpl(final RestClient restClient) {
-    this.restClient = restClient;
+  public RestInvocationServiceImpl(final RestClient restClientAppMgr,
+                                   final RestClient restClientResults) {
+    this.restClientAppMgr = restClientAppMgr;
+    this.restClientResults = restClientResults;
   }
 
   @Override
   public void invoke(SimulationCreate simulationCreate) {
     logger.debug("~invoke() : Called for '{}'", simulationCreate);
-    String body = "";
+
+    String body = null;
     try {
       body = objectMapper.writeValueAsString(simulationCreate);
     } catch (JsonProcessingException e) {
-      body = "{ 'error': '" + e.getMessage() + "' }";
+      logger.error("~invoke() : JSON processing exception for '{}'", simulationCreate);
     }
-    final ResponseEntity<AppManagerResponse> responseEntity = restClient.post()
-                                                                        .contentType(MediaType.APPLICATION_JSON)
-                                                                        .body(body)
-                                                                        .retrieve()
-                                                                        .toEntity(AppManagerResponse.class);
-    final AppManagerResponse response = responseEntity.getBody();
-    // This is a UUID assigned to the simulation by app-manager
-    final String responseId = response.success().id();
 
-    logger.debug("~invoke() : app-manager assigned UUID is '{}'", responseId);
+    if (body == null)
+      return;
+
+    final long simulationId = simulationCreate.simulationId();
+
+    final ResponseEntity<AppManagerResponse> respEntAppMgr = restClientAppMgr.post()
+                                                                             .contentType(MediaType.APPLICATION_JSON)
+                                                                             .body(body)
+                                                                             .retrieve()
+                                                                             .toEntity(AppManagerResponse.class);
+    final AppManagerResponse respAppMgr = respEntAppMgr.getBody();
+    // This is a UUID assigned to the simulation by app-manager
+    final String appMgrId = respAppMgr.success().id();
+    logger.debug("~invoke() : Simulation '{}' invocation generated an app-manager assigned UUID of '{}'",
+                 simulationId, appMgrId);
+
+    final ResponseEntity<Void> respEntResults = restClientResults.patch()
+                                                                 .uri("/results/{id}", simulationId)
+                                                                 .contentType(MediaType.APPLICATION_JSON)
+                                                                 .body("{ \"appManagerId\": \"" + appMgrId + "\" }")
+                                                                 .retrieve()
+                                                                 .toBodilessEntity();
+    if (!respEntResults.getStatusCode().is2xxSuccessful())
+      logger.warn("~invoke() : Simulation '{}' results-svc patch to update app-manager assigned UUID to '{}' unsuccessful",
+                  simulationId, appMgrId);
+
   }
 
 }

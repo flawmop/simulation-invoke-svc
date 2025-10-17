@@ -16,9 +16,15 @@ import reactor.core.publisher.Flux;
 public class SimulationInvokeConfig {
 
   @Bean
-  RestClient restClient(final @Value("${URL_APP_MANAGER:http://app-manager:8080/}")
-                              String appManagerUrl) {
+  RestClient restClientAppMgr(final @Value("${URL_APP_MANAGER:http://app-manager:8080/}")
+                                    String appManagerUrl) {
     return RestClient.builder().baseUrl(appManagerUrl).build();
+  }
+
+  @Bean
+  RestClient restClientResults(final @Value("${URL_RESULTS_SVC:http://results-svc:9004/}")
+                                     String resultsSvcUrl) {
+    return RestClient.builder().baseUrl(resultsSvcUrl).build();
   }
 
   @Bean

@@ -44,6 +44,8 @@ spec:
                   key: rabbitmquser
             - name: URL_APP_MANAGER
               value: http://app-manager:8080/
+            - name: URL_RESULTS_SVC
+              value: http://results-svc:9004/
       volumes:
         - name: simulation-invoke-config-volume
           configMap:
